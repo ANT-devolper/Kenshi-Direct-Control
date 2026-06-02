@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Defines the three build-step targets that Microsoft.BuildSteps.targets
+     expects but that MSBuild 4.8's Microsoft.Common.Targets no longer provides.
+     Required when building v100 (VS2010) .vcxproj files outside the VS IDE. -->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="BuildGenerateSources" DependsOnTargets="$(BuildGenerateSourcesAction)" />
+  <Target Name="BuildCompile"         DependsOnTargets="$(BuildCompileAction)" />
+  <Target Name="BuildLink"            DependsOnTargets="$(BuildLinkAction)" />
+
+  <!-- The VC++ linker writes directly to OutDir via /OUT, so the intermediate
+       copy that Microsoft.Common.Targets expects is never created. Override the
+       copy target to a no-op for DLL/EXE configs built with this project. -->
+  <Target Name="CopyFilesToOutputDirectory" />
+</Project>
