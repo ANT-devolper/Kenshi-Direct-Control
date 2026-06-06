@@ -4,6 +4,7 @@
 #include <kenshi/InputHandler.h>
 #include <kenshi/Character.h>
 #include <kenshi/CharMovement.h>
+#include <kenshi/CharStats.h>
 #include <kenshi/CombatClass.h>
 #include <kenshi/CameraClass.h>
 #include <kenshi/Globals.h>
@@ -506,6 +507,15 @@ static void charMovUpdate_hook(CharMovement* thisptr, float time)
         thisptr->setDirectMovement(wasdDir, 99.0f);
 
         s_charMovUpdateOrig(thisptr, time);
+
+        // MOVE_DIRECTION bypasses the game's running XP path; replicate the
+        // native call so athletics accrues as it does for normal movement.
+        {
+            Character* chXp = thisptr->getCharacter();
+            CharStats* stXp = chXp ? chXp->getStats() : nullptr;
+            if (stXp && time > 0.0f)
+                stXp->xpRunning(time, thisptr->getCurrentSpeed());
+        }
 
 #if DIAG_VERBOSE
         bool animReenabled = thisptr->animationOverride;
